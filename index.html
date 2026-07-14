@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bs-body-font-family: 'Inter', sans-serif;
+      --green: #1E9E52;
+      --green-deep: #0F6E38;
+      --green-dim: rgba(30, 158, 82, 0.10);
+    }
+
+    body {
+      background: #fff;
+      color: #14201A;
+      padding-bottom: 5.5rem;
+    }
+
+    h1,
+    h2,
+    h3,
+    .brand-font {
+      font-family: 'Syne', sans-serif;
+    }
+
+    .mono {
+      font-family: 'DM Mono', monospace;
+    }
+
+
+    .bg-brand-surface {
+      background: #F6FAF7;
+    }
+
+    .border-brand {
+      border-color: #DCE7DF !important;
+    }
+
+    .text-dim {
+      color: #67766D;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: .85rem;
+    }
+
+    .badge-assignment {
+      background: rgba(184, 121, 26, 0.12);
+      color: #B8791A;
+    }
+
+    .badge-lecture {
+      background: rgba(61, 111, 209, 0.10);
+      color: #3D6FD1;
+    }
+
+    .badge-reminder {
+      background: rgba(196, 67, 46, 0.10);
+      color: #C4432E;
+    }
+
+    .badge-live {
+      background: var(--green-dim);
+      color: var(--green-deep);
+    }
+
+    .badge-scheduled {
+      background: #EEF5F0;
+      color: #67766D;
+      border: 1px solid #DCE7DF;
+    }
+
+    .badge-ended {
+      background: #EEF5F0;
+      color: #67766D;
+    }
+
+    .card-live {
+      border-color: rgba(30, 158, 82, .35) !important;
+      background: linear-gradient(160deg, var(--green-dim), #F6FAF7 65%);
+    }
+
+    .card-ended {
+      opacity: .6;
+    }
+
+    .pulse-ring {
+      position: relative;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+    }
+
+    .pulse-ring::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 1.5px solid var(--green);
+      animation: pulseOut 1.8s ease-out infinite;
+    }
+
+    @keyframes pulseOut {
+      0% {
+        transform: scale(.6);
+        opacity: .9;
+      }
+
+      100% {
+        transform: scale(2.4);
+        opacity: 0;
+      }
+    }
+
+    .btn-live {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .btn-live:hover {
+      background: var(--green-deep);
+      color: #fff;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+      animation: fadeIn .25s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .bottom-nav .nav-link {
+      color: #67766D;
+    }
+
+    .bottom-nav .nav-link.active {
+      color: var(--green-deep) !important;
+      background: none !important;
+    }
+
+    .bottom-nav .nav-link svg {
+      display: block;
+      margin: 0 auto;
+    }
+
+    .page-heading h1 {
+      font-size: 1.5rem;
+      text-transform: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container-fluid" style="max-width:1080px;">
+
+    <!-- Topbar -->
+    <div class="d-flex align-items-center justify-content-between py-3 sticky-top bg-white border-bottom border-brand">
+      <div class="d-flex align-items-center gap-2">
+        <div class="avatar" id="avatarInitials">AAO</div>
+        <div>
+          <div class="fw-bold" style="font-size:.95rem;" id="studentName">Abdulbaaqi Akinlade Olajide</div>
+          <div class="text-dim mono" style="font-size:.72rem;" id="matricNo">2027/57674</div>
+        </div>
+      </div>
+      <button class="btn btn-outline-secondary border-brand bg-brand-surface" id="settingsBtn"
+        data-bs-toggle="offcanvas" data-bs-target="#settingsPanel">
+        <i class="bi bi-gear"></i>
+      </button>
+    </div>
+
+    <!-- Heading -->
+    <div class="page-heading text-center py-3">
+      <h1 class="fw-bold mb-1 text-uppercase" id="pageTitle">Noticeboard</h1>
+      <p class="text-dim" id="pageSub">What's new in the department?</p>
+    </div>
+
+    <div class="px-3">
+
+      <!-- NOTICEBOARD -->
+      <div class="panel active" id="panel-notice">
+        <div class="row g-3">
+
+          <div class="col-12 col-md-6">
+            <div class="card bg-brand-surface border-brand h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                  <span class="badge badge-assignment fw-semibold text-uppercase" id="noticeType">Assignment</span>
+                  <span class="text-dim mono small" id="noticeTime">2h ago</span>
+                </div>
+                <h6 class="fw-bold" id="noticeTitle">INS 202 — Assignment to be submitted on Friday</h6>
+                <p class="text-dim small mb-0" id="noticeText">Submit your assignment by Friday. Late or no submissions
+                  affect your CA for the course.</p>
+                <div class="d-flex border-top border-brand pt-2 mt-3 small text-dim">
+                  <span>Posted by &ThinSpace;</span><strong class="text-dark">Geniuz</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="card bg-brand-surface border-brand h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                  <span class="badge badge-lecture fw-semibold text-uppercase" id="noticeType">Lecture</span>
+                  <span class="text-dim mono small" id="noticeTime">Yesterday</span>
+                </div>
+                <h6 class="fw-bold" id="noticeTitle">Venue change for IFT 212</h6>
+                <p class="text-dim small mb-0" id="noticeText">The lecture location has been moved from LT A to MLT at
+                  SET building.</p>
+                <!-- <div class="d-flex border-top border-brand pt-2 mt-3 small text-dim">
+                <span>Posted by</span><strong class="text-dark">Geniuz</strong>
+              </div> -->
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="card bg-brand-surface border-brand h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                  <span class="badge badge-lecture fw-semibold text-uppercase" id="noticeType">Lecture</span>
+                  <span class="text-dim mono small" id="noticeTime">Yesterday</span>
+                </div>
+                <h6 class="fw-bold" id="noticeTitle">MTH202/222 Class</h6>
+                <p class="text-dim small mb-0" id="noticeText">Lecture starts tomorrow by 8am. Door will be closed 8am
+                  sharp, you know the drill!</p>
+                <!-- <div class="d-flex border-top border-brand pt-2 mt-3 small text-dim">
+                <span>Posted by</span><strong class="text-dark">MathKid</strong>
+              </div> -->
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="card bg-brand-surface border-brand h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                  <span class="badge badge-reminder fw-semibold text-uppercase" id="noticeType">Reminder</span>
+                  <span class="text-dim mono small" id="noticeTime">2 days ago</span>
+                </div>
+                <h6 class="fw-bold" id="noticeTitle">Minimum attendance policy</h6>
+                <p class="text-dim small mb-0" id="noticeText">Students below 75% attendance will not be eligible to sit
+                  for the semester exam. Check your attendance score <a href="" class="text-decoration-none"
+                    id="attendanceScore">here</a>.</p>
+                <!-- <div class="d-flex border-top border-brand pt-2 mt-3 small text-dim">
+                <span>Posted by</span><strong class="text-dark">Geniuz</strong>
+              </div> -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SESSIONS -->
+      <div class="panel" id="panel-sessions">
+        <div class="small text-uppercase text-dim fw-semibold mb-2">Today</div>
+
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <div class="card card-live border h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge badge-live fw-semibold text-uppercase"><span class="pulse-ring me-1"></span>Live
+                    now</span>
+                  <span class="mono text-dim small">IFT212</span>
+                </div>
+                <h6 class="fw-bold">IFT212 — Computer Architecture and Organization</h6>
+                <p class="text-dim small mb-3">MLT · Started 10:00am</p>
+                <button class="btn btn-live w-100 fw-semibold" onclick="markAttendance(this)">Mark attendance</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="card bg-brand-surface border-brand h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge badge-scheduled fw-semibold text-uppercase">Scheduled</span>
+                  <span class="mono text-dim small">MTH202/222</span>
+                </div>
+                <h6 class="fw-bold">MTH202/222 — Elementary Differential Equations</h6>
+                <p class="text-dim small mb-3">LT C · Starts 8:00am</p>
+                <button class="btn btn-secondary w-100 fw-semibold" disabled>Not started yet</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="small text-uppercase text-dim fw-semibold mt-4 mb-2">Earlier</div>
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <div class="card card-ended bg-brand-surface border-brand h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge badge-ended fw-semibold text-uppercase">Ended</span>
+                  <span class="mono text-dim small">INS204</span>
+                </div>
+                <h6 class="fw-bold">INS204 — System Analysis and Design</h6>
+                <p class="text-dim small mb-3">URP Main Hall · Marked at <span id="time"></span></p>
+                <button class="btn btn-secondary w-100 fw-semibold" disabled>Attendance recorded</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav fixed-bottom bg-white border-top border-brand">
+    <ul class="nav nav-pills justify-content-center py-2">
+      <li class="nav-item">
+        <button class="nav-link active d-flex flex-column align-items-center px-4" data-tab="notice">
+          <i class="bi bi-clipboard fs-5"></i>
+          <span class="small fw-semibold">Noticeboard</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link d-flex flex-column align-items-center px-4" data-tab="sessions">
+          <i class="bi bi-clock-history fs-5"></i>
+          <span class="small fw-semibold">Sessions</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Settings offcanvas -->
+  <div class="offcanvas offcanvas-bottom" tabindex="-1" id="settingsPanel"
+    style="max-width:480px; margin:0 auto; border-radius:20px 20px 0 0; height:auto;">
+    <div class="offcanvas-body">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <div class="avatar" style="width:52px;height:52px;font-size:1rem;">AAO</div>
+        <div>
+          <div class="fw-bold">Abdulbaaqi Akinlade Olajide</div>
+          <div class="text-dim mono small">2027/57674</div>
+        </div>
+      </div>
+
+      <div class="list-group list-group-flush">
+        <button class="list-group-item list-group-item-action border-brand d-flex align-items-center gap-2">
+          <i class="bi bi-person-circle text-dim"></i> Edit profile
+        </button>
+        <button class="list-group-item list-group-item-action border-brand d-flex align-items-center gap-2">
+          <i class="bi bi-bar-chart text-dim"></i> Check attendance score
+        </button>
+        <button class="list-group-item list-group-item-action border-brand d-flex align-items-center gap-2 text-danger"
+          id="logoutOption">
+          <i class="bi bi-box-arrow-right"></i> Log out
+        </button>
+      </div>
+
+      <button class="btn btn-outline-secondary w-100 mt-3" data-bs-dismiss="offcanvas">Close</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const navButtons = document.querySelectorAll('.bottom-nav .nav-link');
+    const panels = document.querySelectorAll('.panel');
+    const pageTitle = document.getElementById('pageTitle');
+    const pageSub = document.getElementById('pageSub');
+
+    const titles = {
+      notice: { title: 'Noticeboard', sub: "What's new in the department?" },
+      sessions: { title: 'Sessions', sub: 'Tap a live session to mark your attendance' }
+    };
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.tab;
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + target).classList.add('active');
+        pageTitle.textContent = titles[target].title;
+        pageSub.textContent = titles[target].sub;
+      });
+    });
+
+    function markAttendance(btn) {
+      btn.textContent = 'Marking…';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.textContent = '✓ Attendance marked';
+        btn.classList.remove('btn-live');
+        btn.classList.add('btn-secondary');
+      }, 900);
+    }
+
+    // document.getElementById('logoutOption').addEventListener('click', () => {
+      
+    // });
+
+    document.getElementById('time').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  </script>
+
+</body>
+
+</html>
