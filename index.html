@@ -190,11 +190,13 @@
   <div class="container-fluid" style="max-width:1080px;">
 
     <!-- Topbar -->
-    <div class="d-flex align-items-center justify-content-between py-3 sticky-top bg-white border-bottom border-brand">
-      <div class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center justify-content-between py-3 sticky-top bg-white border-bottom border-brand"
+      id="">
+      <div class="d-flex align-items-center gap-2" style="cursor: pointer;" id="settingsBtn" data-bs-toggle="offcanvas"
+        data-bs-target="#settingsPanel">
         <div class="avatar" id="avatarInitials">AAO</div>
         <div>
-          <div class="fw-bold" style="font-size:.95rem;" id="studentName">Abdulbaaqi Akinlade Olajide</div>
+          <div class="fw-bold" style="font-size:.95rem;" id="studentName">AbdulBaaqi Akinlade Olajide</div>
           <div class="text-dim mono" style="font-size:.72rem;" id="matricNo">2027/57674</div>
         </div>
       </div>
@@ -206,8 +208,8 @@
 
     <!-- Heading -->
     <div class="page-heading text-center py-3">
-      <h1 class="fw-bold mb-1 text-uppercase" id="pageTitle">Noticeboard</h1>
-      <p class="text-dim" id="pageSub">What's new in the department?</p>
+      <h1 class="fw-bold mb-1 text-uppercase" style="color: var(--green); font-size: 20px;" id="pageTitle">Noticeboard</h1>
+      <p class="text-dim" id="pageSub" style="color: var(--green-deep);">What's new in the department?</p>
     </div>
 
     <div class="px-3">
@@ -217,7 +219,7 @@
         <div class="row g-3">
 
           <div class="col-12 col-md-6">
-            <div class="card bg-brand-surface border-brand h-100">
+            <div class="card bg-brand-surface border-brand">
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                   <span class="badge badge-assignment fw-semibold text-uppercase" id="noticeType">Assignment</span>
@@ -226,15 +228,15 @@
                 <h6 class="fw-bold" id="noticeTitle">INS 202 — Assignment to be submitted on Friday</h6>
                 <p class="text-dim small mb-0" id="noticeText">Submit your assignment by Friday. Late or no submissions
                   affect your CA for the course.</p>
-                <div class="d-flex border-top border-brand pt-2 mt-3 small text-dim">
+                <!--<div class="d-flex border-top border-brand pt-2 mt-3 small text-dim">
                   <span>Posted by &ThinSpace;</span><strong class="text-dark">Geniuz</strong>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="card bg-brand-surface border-brand h-100">
+            <div class="card bg-brand-surface border-brand">
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                   <span class="badge badge-lecture fw-semibold text-uppercase" id="noticeType">Lecture</span>
@@ -251,7 +253,24 @@
           </div>
 
           <div class="col-12 col-md-6">
-            <div class="card bg-brand-surface border-brand h-100">
+            <div class="card bg-brand-surface border-brand">
+              <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                  <span class="badge badge-assignment fw-semibold text-uppercase" id="noticeType">Reminder</span>
+                  <span class="text-dim mono small" id="noticeTime">22h ago</span>
+                </div>
+                <h6 class="fw-bold" id="noticeTitle">INS 202 Exam shifted to Friday (17th July, August)</h6>
+                <p class="text-dim small mb-0" id="noticeText">INS202 Exam has been shifted to Friday and it will be
+                  MCQ.</p>
+                <!--<div class="d-flex border-top border-brand pt-2 mt-3 small text-dim">
+                  <span>Posted by &ThinSpace;</span><strong class="text-dark">Geniuz</strong>
+                </div> -->
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="card bg-brand-surface border-brand">
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                   <span class="badge badge-lecture fw-semibold text-uppercase" id="noticeType">Lecture</span>
@@ -267,8 +286,8 @@
             </div>
           </div>
 
-          <div class="col-12 col-md-6">
-            <div class="card bg-brand-surface border-brand h-100">
+          <!-- <div class="col-12 col-md-6">
+            <div class="card bg-brand-surface border-brand">
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                   <span class="badge badge-reminder fw-semibold text-uppercase" id="noticeType">Reminder</span>
@@ -278,63 +297,114 @@
                 <p class="text-dim small mb-0" id="noticeText">Students below 75% attendance will not be eligible to sit
                   for the semester exam. Check your attendance score <a href="" class="text-decoration-none"
                     id="attendanceScore">here</a>.</p>
-                <!-- <div class="d-flex border-top border-brand pt-2 mt-3 small text-dim">
-                <span>Posted by</span><strong class="text-dark">Geniuz</strong>
-              </div> -->
+              
               </div>
             </div>
-          </div>
+          </div> -->
 
         </div>
       </div>
 
       <!-- SESSIONS -->
       <div class="panel" id="panel-sessions">
-        <div class="small text-uppercase text-dim fw-semibold mb-2">Today</div>
+        <div id="activeSessions">
+          <div class="small text-uppercase text-dim fw-semibold mb-2">Today</div>
 
-        <div class="row g-3">
-          <div class="col-12 col-md-6">
-            <div class="card card-live border h-100">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="badge badge-live fw-semibold text-uppercase"><span class="pulse-ring me-1"></span>Live
-                    now</span>
-                  <span class="mono text-dim small">IFT212</span>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <div class="card card-live border h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge badge-live fw-semibold text-uppercase"><span class="pulse-ring me-1"></span>Live
+                      now</span>
+                    <span class="mono text-dim small">IFT212</span>
+                  </div>
+                  <h6 class="fw-bold">IFT212 — Computer Architecture and Organization</h6>
+                  <p class="text-dim small mb-3">1K Sitters · Started 10:00am</p>
+                  <button class="btn btn-live w-100 fw-semibold" onclick="markAttendance(this)">Mark attendance</button>
                 </div>
-                <h6 class="fw-bold">IFT212 — Computer Architecture and Organization</h6>
-                <p class="text-dim small mb-3">MLT · Started 10:00am</p>
-                <button class="btn btn-live w-100 fw-semibold" onclick="markAttendance(this)">Mark attendance</button>
               </div>
             </div>
-          </div>
 
-          <div class="col-12 col-md-6">
-            <div class="card bg-brand-surface border-brand h-100">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="badge badge-scheduled fw-semibold text-uppercase">Scheduled</span>
-                  <span class="mono text-dim small">MTH202/222</span>
+            <div class="col-12 col-md-6">
+              <div class="card bg-brand-surface border-brand h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge badge-scheduled fw-semibold text-uppercase">Scheduled</span>
+                    <span class="mono text-dim small">MTH202/222</span>
+                  </div>
+                  <h6 class="fw-bold">MTH202/222 — Elementary Differential Equations</h6>
+                  <p class="text-dim small mb-3">LT C · Starts 8:00am</p>
+                  <button class="btn btn-secondary w-100 fw-semibold" disabled>Not started yet</button>
                 </div>
-                <h6 class="fw-bold">MTH202/222 — Elementary Differential Equations</h6>
-                <p class="text-dim small mb-3">LT C · Starts 8:00am</p>
-                <button class="btn btn-secondary w-100 fw-semibold" disabled>Not started yet</button>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="small text-uppercase text-dim fw-semibold mt-4 mb-2">HISTORY</div>
-        <div class="row g-3">
-          <div class="col-12 col-md-6">
-            <div class="card card-ended bg-brand-surface border-brand h-100">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="badge badge-ended fw-semibold text-uppercase">Ended</span>
-                  <span class="mono text-dim small">INS204</span>
+        <div id="inActiveSessions">
+          <div class="small text-uppercase text-dim fw-semibold mt-4 mb-2">HISTORY</div>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <div class="card card-ended bg-brand-surface border-brand h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge badge-ended fw-semibold text-uppercase">Ended</span>
+                    <span class="mono text-dim small">INS204</span>
+                  </div>
+                  <h6 class="fw-bold">INS204 — System Analysis and Design</h6>
+                  <p class="text-dim small mb-3">Marked at URP Main Hall on <span style="color: var(--green-deep);"
+                      id="markedDate">"13th of July"</span></p>
+                  <button class="btn btn-secondary w-100 fw-semibold" disabled>Attendance Recorded</button>
                 </div>
-                <h6 class="fw-bold">INS204 — System Analysis and Design</h6>
-                <p class="text-dim small mb-3">URP Main Hall · Marked at <span id="time"></span></p>
-                <button class="btn btn-secondary w-100 fw-semibold" disabled>Attendance recorded</button>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="card card-ended bg-brand-surface border-brand h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge badge-ended fw-semibold text-uppercase">Ended</span>
+                    <span class="mono text-dim small">INS204</span>
+                  </div>
+                  <h6 class="fw-bold">INS204 — System Analysis and Design</h6>
+                  <p class="text-dim small mb-3"> Marked at JUPEB Building on <span style="color: var(--green-deep);"
+                      id="markedDate">"unavailable"</span></p>
+                  <button class="btn btn-secondary w-100 fw-semibold" disabled>Session Ended (Attendance not
+                    Recorded)</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="card card-ended bg-brand-surface border-brand h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge badge-ended fw-semibold text-uppercase">Ended</span>
+                    <span class="mono text-dim small">INS204</span>
+                  </div>
+                  <h6 class="fw-bold">INS204 — System Analysis and Design</h6>
+                  <p class="text-dim small mb-3">Marked at JUPEB Building on <span style="color: var(--green-deep);"
+                      id="markedDate">"unavailable"</span></p>
+                  <button class="btn btn-secondary w-100 fw-semibold" disabled>Session Ended (Attendance not
+                    Recorded)</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="card card-ended bg-brand-surface border-brand h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge badge-ended fw-semibold text-uppercase">Ended</span>
+                    <span class="mono text-dim small">MTH202/222</span>
+                  </div>
+                  <h6 class="fw-bold">MTH202/222 — Elementary Differential Equations</h6>
+                  <p class="text-dim small mb-3">Marked at Lecture Theatre C on <span style="color: var(--green-deep);"
+                      id="markedDate">"13th of July"</span></p>
+                  <button class="btn btn-secondary w-100 fw-semibold" disabled>Session Ended (Attendance
+                    Recorded)</button>
+                </div>
               </div>
             </div>
           </div>
@@ -397,10 +467,13 @@
     const panels = document.querySelectorAll('.panel');
     const pageTitle = document.getElementById('pageTitle');
     const pageSub = document.getElementById('pageSub');
+    const activeSession = document.getElementById('activeSesssion');
+    const inActiveSession = document.getElementById('inActiveSesssion');
 
     const titles = {
       notice: { title: 'Noticeboard', sub: "What's new in the department?" },
-      sessions: { title: 'Sessions', sub: 'Tap a live session to mark your attendance' }
+      sessions: { title: 'Sessions', sub: `Tap a live session to mark your attendance, 
+      session will end 40 mins after Class` }
     };
 
     navButtons.forEach(btn => {
@@ -425,9 +498,9 @@
       }, 900);
     }
 
-    // document.getElementById('logoutOption').addEventListener('click', () => {
-      
-    // });
+    document.getElementById('logoutOption').addEventListener('click', () => {
+      window.open('app-preview-vanilla.html')
+    });
 
     document.getElementById('time').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   </script>
