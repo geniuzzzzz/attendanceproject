@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — Attendance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B0D10;
+    --surface: #15181C;
+    --surface-2: #1B1F24;
+    --border: #262B31;
+    --text: #F3F4F1;
+    --text-dim: #8A9099;
+    --live: #39FF88;
+    --live-dim: rgba(57,255,136,0.14);
+    --amber: #E8A33D;
+    --amber-dim: rgba(232,163,61,0.14);
+    --danger: #FF5C5C;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,h2,h3{ font-family:'Syne', sans-serif; }
+
+  .mono{ font-family:'DM Mono', monospace; }
+
+  /* ---------- App shell ---------- */
+  .app{
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    position: relative;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.25rem 0.9rem;
+    background: linear-gradient(to bottom, var(--bg) 80%, transparent);
+  }
+
+  .brand{
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .brand-mark{
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex; align-items:center; justify-content:center;
+    font-family:'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: var(--live);
+  }
+
+  .brand-name{
+    font-size: 0.68rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .avatar{
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex; align-items:center; justify-content:center;
+    font-family:'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--text);
+  }
+
+  .greeting{
+    padding: 0.2rem 1.25rem 1.1rem;
+  }
+  .greeting h1{
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .greeting p{
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    margin-top: 0.25rem;
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    display: flex;
+    gap: 0.4rem;
+    padding: 0 1.25rem;
+    margin-bottom: 1.1rem;
+  }
+  .tab-btn{
+    flex: 1;
+    padding: 0.65rem 0;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    position: relative;
+  }
+  .tab-btn.active{
+    background: var(--surface-2);
+    color: var(--text);
+    border-color: #333a42;
+  }
+  .tab-btn .dot-badge{
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--live);
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+
+  /* ---------- Content ---------- */
+  .content{
+    flex: 1;
+    padding: 0 1.25rem 6rem;
+    overflow-y: auto;
+  }
+
+  .panel{ display: none; animation: fadeIn 0.25s ease; }
+  .panel.active{ display: block; }
+
+  @keyframes fadeIn{
+    from{ opacity:0; transform: translateY(6px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .section-label{
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.7rem;
+  }
+
+  /* ---------- Notice cards ---------- */
+  .notice-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 0.8rem;
+  }
+  .notice-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+  .tag{
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.55rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .tag.assignment{ background: var(--amber-dim); color: var(--amber); }
+  .tag.lecture{ background: rgba(120,150,255,0.14); color: #7FA0FF; }
+  .tag.reminder{ background: rgba(255,92,92,0.12); color: var(--danger); }
+
+  .notice-time{
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+  }
+  .notice-title{
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .notice-body{
+    font-size: 0.83rem;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+  .notice-footer{
+    display:flex;
+    align-items:center;
+    gap: 0.4rem;
+    margin-top: 0.7rem;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  /* ---------- Session cards ---------- */
+  .session-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.1rem;
+    margin-bottom: 0.85rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .session-card.live{
+    border-color: rgba(57,255,136,0.35);
+    background: linear-gradient(160deg, var(--live-dim), var(--surface) 60%);
+  }
+  .session-card.ended{ opacity: 0.55; }
+
+  .session-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.65rem;
+  }
+
+  .status-pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem 0.3rem 0.5rem;
+    border-radius: 20px;
+  }
+  .status-pill.live{ background: var(--live-dim); color: var(--live); }
+  .status-pill.scheduled{ background: var(--surface-2); color: var(--text-dim); border: 1px solid var(--border); }
+  .status-pill.ended{ background: var(--surface-2); color: var(--text-dim); }
+
+  .pulse-ring{
+    position: relative;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--live);
+  }
+  .pulse-ring::before{
+    content:'';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1.5px solid var(--live);
+    animation: pulseOut 1.8s ease-out infinite;
+  }
+  @keyframes pulseOut{
+    0%{ transform: scale(0.6); opacity: 0.9; }
+    100%{ transform: scale(2.4); opacity: 0; }
+  }
+
+  .session-code{
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .session-title{
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    margin-bottom: 0.2rem;
+  }
+  .session-meta{
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 0.9rem;
+  }
+
+  .session-action{
+    width: 100%;
+    padding: 0.7rem 0;
+    border-radius: 10px;
+    border: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease;
+  }
+  .session-action:active{ transform: scale(0.98); }
+
+  .session-action.primary{
+    background: var(--live);
+    color: #061109;
+  }
+  .session-action.primary:hover{ filter: brightness(1.08); }
+
+  .session-action.disabled{
+    background: var(--surface-2);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    cursor: not-allowed;
+  }
+
+  .empty-state{
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-dim);
+  }
+  .empty-state .glyph{
+    font-size: 1.8rem;
+    margin-bottom: 0.6rem;
+  }
+  .empty-state p{ font-size: 0.85rem; }
+
+  /* ---------- Bottom nav (phone chrome feel) ---------- */
+  .bottom-nav{
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    padding: 0.9rem 0 1.2rem;
+    background: linear-gradient(to top, var(--bg) 70%, transparent);
+    pointer-events: none;
+  }
+  .home-indicator{
+    width: 120px; height: 4px;
+    border-radius: 4px;
+    background: var(--border);
+  }
+
+  /* ---------- Larger screens: phone-frame mockup ---------- */
+  @media (min-width: 640px){
+    body{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #050607;
+      background-image: radial-gradient(circle at 30% 20%, rgba(57,255,136,0.05), transparent 45%);
+    }
+    .app{
+      width: 390px;
+      height: 820px;
+      border-radius: 42px;
+      border: 10px solid #1A1D21;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.55);
+      overflow: hidden;
+    }
+    .content{ overflow-y: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div class="brand-name">Attendance</div>
+    </div>
+    <div class="avatar">GA</div>
+  </div>
+
+  <div class="greeting">
+    <h1>Hey, Geniuz 👋</h1>
+    <p>CSC · 300 Level · Wed, Jul 9</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="notice" id="tabNoticeBtn">
+      Noticeboard
+    </button>
+    <button class="tab-btn" data-tab="sessions" id="tabSessionsBtn">
+      Sessions <span class="dot-badge"></span>
+    </button>
+  </div>
+
+  <div class="content">
+
+    <!-- NOTICEBOARD PANEL -->
+    <div class="panel active" id="panel-notice">
+      <div class="section-label">Latest updates</div>
+
+      <div class="notice-card">
+        <div class="notice-top">
+          <span class="tag assignment">Assignment</span>
+          <span class="notice-time mono">2h ago</span>
+        </div>
+        <div class="notice-title">CSC 302 — Assignment 3 due Friday</div>
+        <div class="notice-body">Submit your ER-diagram writeup via the portal before 11:59pm. Late submissions attract a 10% penalty per day.</div>
+        <div class="notice-footer">
+          <span>Posted by</span>
+          <strong style="color:var(--text)">Dr. Adewale</strong>
+        </div>
+      </div>
+
+      <div class="notice-card">
+        <div class="notice-top">
+          <span class="tag lecture">Lecture</span>
+          <span class="notice-time mono">Yesterday</span>
+        </div>
+        <div class="notice-title">Venue change for CSC 301</div>
+        <div class="notice-body">Thursday's lecture has been moved from LT2 to the Engineering Auditorium due to a clash.</div>
+        <div class="notice-footer">
+          <span>Posted by</span>
+          <strong style="color:var(--text)">HOD, CSC</strong>
+        </div>
+      </div>
+
+      <div class="notice-card">
+        <div class="notice-top">
+          <span class="tag reminder">Reminder</span>
+          <span class="notice-time mono">2 days ago</span>
+        </div>
+        <div class="notice-title">Minimum attendance policy</div>
+        <div class="notice-body">Students below 75% attendance will not be eligible to sit for the semester exam. Check your attendance percentage regularly.</div>
+        <div class="notice-footer">
+          <span>Posted by</span>
+          <strong style="color:var(--text)">Exams &amp; Records</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESSIONS PANEL -->
+    <div class="panel" id="panel-sessions">
+      <div class="section-label">Today</div>
+
+      <div class="session-card live">
+        <div class="session-top">
+          <span class="status-pill live"><span class="pulse-ring"></span>Live now</span>
+          <span class="session-code mono">CSC301-A4</span>
+        </div>
+        <div class="session-title">CSC 301 — Database Systems</div>
+        <div class="session-meta">Engineering Auditorium · Started 9:05am</div>
+        <button class="session-action primary" onclick="markAttendance(this)">Mark attendance</button>
+      </div>
+
+      <div class="session-card">
+        <div class="session-top">
+          <span class="status-pill scheduled">Scheduled</span>
+          <span class="session-code mono">CSC318-B1</span>
+        </div>
+        <div class="session-title">CSC 318 — Operating Systems</div>
+        <div class="session-meta">LT2 · Starts 2:00pm</div>
+        <button class="session-action disabled" disabled>Not started yet</button>
+      </div>
+
+      <div class="section-label" style="margin-top:1.6rem;">Earlier</div>
+
+      <div class="session-card ended">
+        <div class="session-top">
+          <span class="status-pill ended">Ended</span>
+          <span class="session-code mono">CSC302-C2</span>
+        </div>
+        <div class="session-title">CSC 302 — Software Engineering</div>
+        <div class="session-meta">LT1 · Marked at 8:02am</div>
+        <button class="session-action disabled" disabled>Attendance recorded</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <div class="home-indicator"></div>
+  </div>
+
+</div>
+
+<script>
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      panels.forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + target).classList.add('active');
+    });
+  });
+
+  function markAttendance(btn) {
+    btn.textContent = 'Marking…';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = '✓ Attendance marked';
+      btn.classList.remove('primary');
+      btn.classList.add('disabled');
+    }, 900);
+  }
+</script>
+
+</body>
+</html>

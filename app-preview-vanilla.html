@@ -1,0 +1,260 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class Schedule App</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #0d0d0d;
+      color: white;
+      min-height: 100vh;
+    }
+    header {
+      padding: 1rem;
+      background: #111;
+    }
+    header button, .submit-btn {
+      padding: 0.5rem 1rem;
+      background: #30e30e;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    main { padding: 2rem; }
+    .auth-box {
+      max-width: 400px;
+      margin: 8rem auto;
+      padding: 2rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.8);
+      position: relative;
+    }
+    .field { margin-bottom: 1rem; }
+    .field label { display: block; margin-bottom: 0.3rem; }
+    .field input {
+      width: 100%;
+      padding: 0.5rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid gray;
+      color: white;
+    }
+    .submit-btn { width: 100%; padding: 0.75rem; }
+    .toggle-link { color: #30e30e; cursor: pointer; text-decoration: underline; }
+    .center-text { text-align: center; margin-top: 1rem; }
+    .close-btn {
+      position: absolute; top: 1rem; right: 1rem;
+      background: none; border: none; font-size: 1.5rem;
+      cursor: pointer; color: white;
+    }
+    .logout-btn {
+      position: absolute; left: 10%; right: 10%; bottom: 15%;
+      background: blue; border: none; font-size: 1.2rem;
+      cursor: pointer; color: white; padding: 0.8rem 0;
+      display: flex; justify-content: center; align-items: center;
+      width: 50%; border-radius: 1rem;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    // ---- State ----
+    let isLoggedIn = false;
+    let currentUser = "";
+    let showAuthForm = true;
+    let showHome = true;
+    let isRegistering = false;
+
+    // ---- Helpers ----
+    async function hashPassword(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return btoa(String.fromCharCode(...hashArray));
+    }
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem("users") || "{}");
+    }
+    function saveUsers(users) {
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    // ---- Render ----
+    function render() {
+      const root = document.getElementById("root");
+      root.innerHTML = "";
+
+      if (isLoggedIn && showHome) {
+        root.appendChild(renderHeader());
+        root.appendChild(renderMain());
+      }
+      if (showAuthForm) {
+        root.appendChild(renderAuthBox());
+      }
+    }
+
+    function renderHeader() {
+      const header = document.createElement("header");
+      const btn = document.createElement("button");
+      btn.textContent = "Account";
+      btn.onclick = () => {
+        showAuthForm = !showAuthForm;
+        showHome = false;
+        render();
+      };
+      header.appendChild(btn);
+      return header;
+    }
+
+    function renderMain() {
+      const main = document.createElement("main");
+      main.innerHTML = `<h1>Class Schedules</h1><form>Lecturer Table</form>`;
+      return main;
+    }
+
+    function renderAuthBox() {
+      const box = document.createElement("div");
+      box.className = "auth-box";
+
+      if (isLoggedIn) {
+        box.innerHTML = `
+          <button class="close-btn" id="closeBtn">X</button>
+          <p>Account Settings for ${currentUser}</p>
+          <p>Schedule</p>
+          <button class="logout-btn" id="logoutBtn">Logout</button>
+        `;
+        box.querySelector("#closeBtn").onclick = () => {
+          showAuthForm = false;
+          showHome = true;
+          render();
+        };
+        box.querySelector("#logoutBtn").onclick = () => {
+          sessionStorage.removeItem("loggedInUser");
+          isLoggedIn = false;
+          currentUser = "";
+          showAuthForm = false;
+          showHome = true;
+          render();
+        };
+        return box;
+      }
+
+      if (isRegistering) {
+        box.innerHTML = `
+          <h2>Create Account</h2>
+          <form id="registerForm">
+            <div class="field"><label>First Name</label><input type="text" id="firstName" required /></div>
+            <div class="field"><label>Middle Name</label><input type="text" id="middleName" required /></div>
+            <div class="field"><label>Last Name</label><input type="text" id="lastName" required /></div>
+            <div class="field"><label>Matric No</label><input type="text" id="matric" required /></div>
+            <div class="field"><label>Password</label><input type="password" id="password" required /></div>
+            <button type="submit" class="submit-btn">Register</button>
+          </form>
+          <p class="center-text">Already have an account? <span class="toggle-link" id="toggleLink">Login here</span></p>
+        `;
+        box.querySelector("#registerForm").onsubmit = async (e) => {
+          e.preventDefault();
+          const firstName = box.querySelector("#firstName").value;
+          const middleName = box.querySelector("#middleName").value;
+          const lastName = box.querySelector("#lastName").value;
+          const matric = box.querySelector("#matric").value;
+          const password = box.querySelector("#password").value;
+
+          if (!matric || !password || !firstName || !middleName || !lastName) {
+            alert("Fill all fields");
+            return;
+          }
+          if (matric.length !== 10) {
+            alert("Error! Wrong Matric Number, please check your Matric Number...");
+            return;
+          }
+
+          const users = getUsers();
+          if (users[matric]) {
+            alert("Matric number already exists!");
+            return;
+          }
+
+          const hashedPw = await hashPassword(password);
+          users[matric] = hashedPw;
+          saveUsers(users);
+
+          alert("Registration successful! Please login.");
+          isRegistering = false;
+          render();
+        };
+      } else {
+        box.innerHTML = `
+          <h2>Login</h2>
+          <form id="loginForm">
+            <div class="field"><label>Matric No</label><input type="text" id="matric" required /></div>
+            <div class="field"><label>Password</label><input type="password" id="password" required /></div>
+            <button type="submit" class="submit-btn">Login</button>
+          </form>
+          <p class="center-text">Don't have an account? <span class="toggle-link" id="toggleLink">Register here</span></p>
+        `;
+        box.querySelector("#loginForm").onsubmit = async (e) => {
+          e.preventDefault();
+          const matric = box.querySelector("#matric").value;
+          const password = box.querySelector("#password").value;
+
+          if (!matric || !password) {
+            alert("Fill all fields");
+            return;
+          }
+
+          const users = getUsers();
+          const storedHash = users[matric];
+          if (!storedHash) {
+            alert("User not found. Please register first.");
+            return;
+          }
+
+          const inputHash = await hashPassword(password);
+          if (inputHash === storedHash) {
+            sessionStorage.setItem("loggedInUser", matric);
+            isLoggedIn = true;
+            currentUser = matric;
+            showAuthForm = false;
+            showHome = true;
+            render();
+          } else {
+            alert("Wrong password or Matric!");
+          }
+        };
+      }
+
+      box.querySelector("#toggleLink").onclick = () => {
+        isRegistering = !isRegistering;
+        render();
+      };
+
+      return box;
+    }
+
+    // ---- Init ----
+    (function init() {
+      const savedUser = sessionStorage.getItem("loggedInUser");
+      if (savedUser) {
+        isLoggedIn = true;
+        currentUser = savedUser;
+        showAuthForm = false;
+      } else {
+        showAuthForm = true;
+      }
+      render();
+    })();
+  </script>
+</body>
+</html>
